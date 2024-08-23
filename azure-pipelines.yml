@@ -4,9 +4,9 @@ trigger:
 stages:
 - stage: DeployToVM
   jobs:
-  - deployment: InstallApacheAndConfigure
-    displayName: "Instalar Apache y Configurar Página"
-    
+  - deployment: DeployWebsite
+    displayName: "Desplegar Página Web"
+
     environment:
       name: "Admin-VM" # Nombre de tu entorno
       resourceType: VirtualMachine # Tipo de recurso, en este caso una máquina virtual
@@ -16,10 +16,13 @@ stages:
         deploy:
           steps:
           - script: |
-              echo "Iniciando instalación de Apache..."
-              sudo apt-get update
-              sudo apt-get install -y apache2
-              echo "Hola Estudiantes, Hemos configurado la administración y toma de control de la máquina virtual desde Azure DevOps con código automatizado para cumplir con el CI/CD" | sudo tee /var/www/html/index.html
+              echo "Desplegando página web..."
+
+              # Copiar el archivo index.html a la carpeta de Apache
+              sudo cp $(System.DefaultWorkingDirectory)/index.html /var/www/html/
+
+              # Reiniciar Apache para aplicar cambios, si es necesario
               sudo systemctl restart apache2
-              echo "Instalación y configuración completadas."
-            displayName: "Instalar Apache y Configurar Mensaje"
+
+              echo "Página web desplegada exitosamente."
+            displayName: "Copiar Archivo y Reiniciar Apache"
